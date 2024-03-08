@@ -7,41 +7,47 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using Mutations;
+using System.Xml;
+using UnityEditor.Experimental.GraphView;
 
 public class Player : MonoBehaviour
 {
     private GameObject player;
     private SpriteRenderer spriteRenderer;
 
-    public float friction = 0.16f; // BETWEEN 0 AND 1
-    public float gravity = -2f;
-
     private bool grounded = false;
-    private Vector2 velocity = Vector2.zero;
+    [SerializeField] private Vector2 velocity = Vector2.zero;
 
     // Movement Types
-    class Movement {
-        public KeyCode key;
+    public enum MovementType
+    {
+        Add,
+        Set
+    }
+
+    public class Movement {
         public string identifier;
-        public float strength;
         public Vector2 direction;
+        public float strength;
+        public MovementType type;
         public bool needsGround;
 
-        public Movement(KeyCode key, string identifier, float strength, Vector2 direction, bool needsGround)
+        public Movement(string identifier, Vector2 direction, float strength, MovementType type, bool needsGround)
         {
-            this.key = key;
             this.identifier = identifier;
-            this.strength = strength;
             this.direction = direction;
+            this.strength = strength;
+            this.type = type;
             this.needsGround = needsGround;
         }
     }
 
-    Movement[] movements =
+    public static Dictionary<KeyCode, Movement> movements = new Dictionary<KeyCode, Movement>()
     {
-        new Movement(KeyCode.Space, "Space", 25f, new Vector2(0, 1), true),
-        new Movement(KeyCode.A, "Left", 2f, new Vector2(-1, 0), false),
-        new Movement(KeyCode.D, "Right", 2f, new Vector2(1, 0), false),
+        [KeyCode.Space] = new Movement("Jump", new Vector2(0, 1), 25f, MovementType.Add, true),
+        [KeyCode.W] = new Movement("Jump", new Vector2(0, 1), 25f, MovementType.Add, true),
+        [KeyCode.A] = new Movement("Left", new Vector2(-1, 0), 2f, MovementType.Add, false),
+        [KeyCode.D] = new Movement("Right", new Vector2(1, 0), 2f, MovementType.Add, false),
     };
 
     private void CalculateCollision(Collision2D collision)
@@ -77,6 +83,8 @@ public class Player : MonoBehaviour
     {
         player = GameObject.Find("Player");
         spriteRenderer = player.GetComponent<SpriteRenderer>();
+
+        Wings.Mutate();
     }
 
     // Update is called once per frame
@@ -86,15 +94,24 @@ public class Player : MonoBehaviour
         Vector2 position = player.transform.position;
 
         // Change velocity based on inputs
-        for (int i = 0; i < movements.Length; i++)
+        foreach (KeyValuePair<KeyCode, Movement> entry in movements)
         {
-            Movement movement = movements[i];
-            if (Input.GetKey(movement.key))
+            KeyCode keyCode = entry.Key;
+            Movement movement = entry.Value;
+
+            if (Input.GetKey(keyCode))
             {
                 if (movement.needsGround == true && grounded == false)
                     continue;
-
-                velocity = velocity + (movement.direction * movement.strength);
+                if (movement.type == MovementType.Add)
+                {
+                    velocity = velocity + (movement.direction * movement.strength);
+                } 
+                else
+                {
+                    Vector2 oppositeVector = new Vector2(velocity.x * (1 - movement.direction.x), velocity.y * (1 - movement.direction.y));
+                    velocity = oppositeVector + (movement.direction * movement.strength);
+                }
             }
         }
 
@@ -105,8 +122,8 @@ public class Player : MonoBehaviour
             Sun.Passive();
         
         // Apply gravity
-        velocity.y += gravity;
-        velocity.x *= 1 - friction;
+        velocity.y += Globals.gravity;
+        velocity.x *= 1 - Globals.friction;
 
         // Detect if out-of-range
         if (position.y + velocity.y * deltaTime < -10f)

@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
+
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -22,7 +22,6 @@ namespace Mutations
         public static bool enabled = false;
 
         // mutation specific fields
-        static Sprite sprite = Resources.Load<Sprite>("Sprites/manmushroom");
         static GameObject mushroomLight = GameObject.Find("Mushroom Light");
 
         static float maxHeat = 5f;
@@ -44,7 +43,7 @@ namespace Mutations
 
         public static void Mutate()
         {
-            spriteRenderer.sprite = sprite;
+            spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/manmushroom");
             enabled = true;
         }
 
@@ -65,9 +64,31 @@ namespace Mutations
 
             mushroomLight.transform.position = playerPosition;
             if (heat > 0f)
-                mushroomLight.GetComponent<Light2D>().intensity = 1 / (maxHeat / heat);
+                mushroomLight.GetComponent<UnityEngine.Rendering.Universal.Light2D>().intensity = 1 / (maxHeat / heat);
             else
-                mushroomLight.GetComponent<Light2D>().intensity = 0f;
+                mushroomLight.GetComponent<UnityEngine.Rendering.Universal.Light2D>().intensity = 0f;
+        }
+    }
+
+    public static class Wings
+    {
+        static GameObject player = GameObject.Find("Player");
+        static SpriteRenderer spriteRenderer = player.GetComponent<SpriteRenderer>();
+
+        // base fields
+        public static string name = "Wings";
+        public static bool enabled = false;
+
+        // mutation specific fields
+        public static float flySpeed = 8f;
+        
+        public static void Mutate()
+        {
+            spriteRenderer.sprite = Resources.Load<Sprite>("Sprites/manwings");
+
+            Player.movements[KeyCode.Space] = new Player.Movement("Fly", new Vector3(0, 1f), flySpeed - Globals.gravity, Player.MovementType.Set, false);
+
+            enabled = true;
         }
     }
 }
