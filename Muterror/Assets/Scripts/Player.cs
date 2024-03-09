@@ -9,11 +9,13 @@ using UnityEngine;
 using Mutations;
 using System.Xml;
 using UnityEditor.Experimental.GraphView;
+using static Player;
 
 public class Player : MonoBehaviour
 {
     private GameObject player;
     private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     private bool grounded = false;
     [SerializeField] private Vector2 velocity = Vector2.zero;
@@ -83,6 +85,7 @@ public class Player : MonoBehaviour
     {
         player = GameObject.Find("Player");
         spriteRenderer = player.GetComponent<SpriteRenderer>();
+        animator = player.GetComponent<Animator>();
 
         Wings.Mutate();
     }
@@ -92,6 +95,10 @@ public class Player : MonoBehaviour
     {
         float deltaTime = Time.fixedDeltaTime; // makes values correlate to seconds rather than be ambiguous
         Vector2 position = player.transform.position;
+
+        // Reset animation parameters
+        animator.SetBool("MovingHorizontal", false);
+        animator.SetBool("MovingVertical", false);
 
         // Change velocity based on inputs
         foreach (KeyValuePair<KeyCode, Movement> entry in movements)
@@ -103,11 +110,25 @@ public class Player : MonoBehaviour
             {
                 if (movement.needsGround == true && grounded == false)
                     continue;
+
+                // Set animation parameters
+                if (movement.direction.x > 0.1f)
+                {
+                    animator.SetBool("MovingHorizontal", true);
+                    spriteRenderer.flipX = true;
+                } 
+                else if (movement.direction.x < -0.1f)
+                {
+                    animator.SetBool("MovingHorizontal", true);
+                    spriteRenderer.flipX = false;
+                }
+
+                // Add key velocities
                 if (movement.type == MovementType.Add)
                 {
                     velocity = velocity + (movement.direction * movement.strength);
                 } 
-                else
+                else if (movement.type == MovementType.Set)
                 {
                     Vector2 oppositeVector = new Vector2(velocity.x * (1 - movement.direction.x), velocity.y * (1 - movement.direction.y));
                     velocity = oppositeVector + (movement.direction * movement.strength);
@@ -115,12 +136,15 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (Math.Abs(velocity.y) > 0)
+            animator.SetBool("MovingVertical", true);
+
         // Activate mutations
         if (Sun.InSunlight() == true)
             Sun.Mutate();
         if (Sun.enabled == true)
             Sun.Passive();
-        
+
         // Apply gravity
         velocity.y += Globals.gravity;
         velocity.x *= 1 - Globals.friction;

@@ -547,7 +547,6 @@ GameObject:
   - component: {fileID: 643939765}
   - component: {fileID: 643939762}
   - component: {fileID: 643939766}
-  - component: {fileID: 643939767}
   - component: {fileID: 643939768}
   m_Layer: 0
   m_Name: Player
@@ -624,12 +623,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 027789827c5a0864097a43313b80c2e3, type: 3}
+  m_Sprite: {fileID: 2103302798854743359, guid: 4c3c0f75b597f3a4eb66875145ac8e78, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.17, y: 0.26}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -644,8 +643,8 @@ Transform:
   m_GameObject: {fileID: 643939761}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.46, y: 0.09083231, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -7.648, y: 0.337, z: 0}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -695,31 +694,19 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.015, y: -0.09}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
-    oldSize: {x: 0.18, y: 0.26}
-    newSize: {x: 1, y: 1}
+    pivot: {x: 0.5294118, y: 0.61538464}
+    oldSize: {x: 0.53125, y: 0.8125}
+    newSize: {x: 0.17, y: 0.26}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.53, y: 0.81}
   m_EdgeRadius: 0
---- !u!114 &643939767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 643939761}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf25e3f8b95c5be428e6f2df1189225f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!95 &643939768
 Animator:
   serializedVersion: 5
